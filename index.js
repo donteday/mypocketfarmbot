@@ -15,11 +15,7 @@ app.use(express.json());
 
 app.get('/api/users', async (req, res) => {
     try {
-        console.log('запрос', req);
-
         const users = await UserModel.findAll();
-        console.log(users);
-
         res.json(users);
     } catch (error) {
         console.error('Ошибка при получении пользователей:', error);
