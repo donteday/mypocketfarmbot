@@ -16,7 +16,23 @@ const User = sequelize.define('User', {
     },
     field: {
         type: DataTypes.STRING
-        }
+    },
+    userName: {  // Новое поле для хранения имени пользователя Telegram
+        type: DataTypes.STRING,
+        allowNull: true  // Установите в false, если это поле обязательно
+    }
 });
 
 module.exports = User;
+// module.exports = {
+//     up: async (queryInterface, Sequelize) => {
+//       await queryInterface.addColumn('Users', 'userName', {
+//         type: Sequelize.STRING,
+//         allowNull: false,
+//       });
+//     },
+  
+//     down: async (queryInterface, Sequelize) => {
+//       await queryInterface.removeColumn('Users', 'username');
+//     },
+//   };

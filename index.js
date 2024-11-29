@@ -16,10 +16,10 @@ app.use(express.json());
 app.get('/api/users', async (req, res) => {
     try {
         console.log('запрос', req);
-        
+
         const users = await UserModel.findAll();
         console.log(users);
-        
+
         res.json(users);
     } catch (error) {
         console.error('Ошибка при получении пользователей:', error);
@@ -32,14 +32,14 @@ app.listen(PORT, async () => {
         await sequelize.authenticate();
         await sequelize.sync();
         console.log('Соединение с базой данных установлено.');
-        console.log(`Сервер запущен на http://localhost:${PORT}`);
     } catch (error) {
         console.error('Не удалось подключиться к базе данных:', error);
     }
 });
 
 const start = async () => {
-
+    await sequelize.authenticate();
+    await sequelize.sync();
     // try {
     //     await sequelize.authenticate();
     //     await sequelize.sync()
@@ -52,18 +52,21 @@ const start = async () => {
     bot.on('message', async (msg) => {
         const chatId = String(msg.chat.id);
         const text = msg.text;
+        const userName = msg.chat.username;
 
         // const existingUser  = true;
         // const existingUser  = await UserModel.findOne({ where: { chatId } });
 
-        console.log(`Checking for user with chatId: ${chatId}`);
-        const existingUser = await UserModel.findOne({ where: { chatId } });
-        console.log(`Existing user: ${existingUser}`);
+        // console.log(`Checking for user with chatId: ${chatId}`);
+        const existingUser = await UserModel.findOne({ where: { chatId, userName } });
+        // console.log(`Existing user: ${existingUser}`);
 
         if (text === '/start') {
+            // await UserModel.create({ chatId, userName });
+
             if (!existingUser) {
                 // Если пользователь не найден, создаем нового
-                // await UserModel.create({ chatId });
+                await UserModel.create({ chatId, userName });
                 await bot.sendMessage(chatId, 'Приветствую тебя фермер!', {
                     reply_markup: {
                         inline_keyboard: [
