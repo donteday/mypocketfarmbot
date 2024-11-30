@@ -12,7 +12,7 @@ module.exports = new Sequelize(
         dialectOptions: {
             ssl: {
               // CAUTION: there are better ways to load the certificate, see comments below
-              ca: fs.readFileSync('~/.postgresql/root.crt').toString()
+              ca: fs.readFileSync('./../.postgresql/root.crt').toString()
             }
           }
     }
