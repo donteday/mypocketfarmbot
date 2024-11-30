@@ -1,5 +1,9 @@
 const {Sequelize} = require('sequelize');
 const fs = require('fs');
+const path = require('path');
+
+// Путь к вашему сертификату
+const rootCertPath = path.join(process.env.HOME, '.postgresql', 'root.crt');
 
 module.exports = new Sequelize(
     'mpfbd',
@@ -11,9 +15,10 @@ module.exports = new Sequelize(
         dialect: 'postgres',
         dialectOptions: {
             ssl: {
-              // CAUTION: there are better ways to load the certificate, see comments below
-              ca: fs.readFileSync('./../.postgresql/root.crt').toString()
-            }
-          }
+              require: true, // Обязательно требовать SSL
+              rejectUnauthorized: false, // Установите в true, если хотите проверять сертификат
+              ca: fs.readFileSync(rootCertPath), // Читаем сертификат
+            },
+          },
     }
 )
