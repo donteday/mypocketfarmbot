@@ -34,8 +34,8 @@ app.listen(PORT, async () => {
 });
 
 const start = async () => {
-    await sequelize.authenticate();
-    await sequelize.sync();
+    // await sequelize.authenticate();
+    // await sequelize.sync();
     // try {
     //     await sequelize.authenticate();
     //     await sequelize.sync()
@@ -72,7 +72,13 @@ const start = async () => {
                 });
             } else {
                 // Если пользователь уже существует, отправляем соответствующее сообщение
-                await bot.sendMessage(chatId, 'Вы уже зарегистрированы!');
+                await bot.sendMessage(chatId, 'Жми кнопку играфть, фермер!', {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Играть', web_app: { url: webAppUrl } }]
+                        ]
+                    }
+                });
             }
 
         }
