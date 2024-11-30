@@ -34,16 +34,15 @@ app.listen(PORT, async () => {
 });
 
 const start = async () => {
-    // await sequelize.authenticate();
-    // await sequelize.sync();
-    // try {
-    //     await sequelize.authenticate();
-    //     await sequelize.sync()
-    //     await console.log('vse zaebok')
 
-    // } catch (error) {
-    //     console.log('Подключение сломалось');
-    // }
+    try {
+        await sequelize.authenticate();
+        await sequelize.sync()
+        await console.log('vse zaebok')
+
+    } catch (error) {
+        console.log('Подключение сломалось');
+    }
 
     bot.on('message', async (msg) => {
         const chatId = String(msg.chat.id);
