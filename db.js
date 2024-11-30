@@ -1,4 +1,5 @@
 const {Sequelize} = require('sequelize');
+const fs = require('fs');
 
 module.exports = new Sequelize(
     'mpfbd',
@@ -7,6 +8,12 @@ module.exports = new Sequelize(
     {
         host: '90.156.157.127',
         port: 5432,
-        dialect: 'postgres'
+        dialect: 'postgres',
+        dialectOptions: {
+            ssl: {
+              // CAUTION: there are better ways to load the certificate, see comments below
+              ca: fs.readFileSync('../.postgresql/root.crt').toString()
+            }
+          }
     }
 )
