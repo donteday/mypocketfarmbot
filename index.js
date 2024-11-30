@@ -28,12 +28,12 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-const sslOptions = {
-    key: fs.readFileSync('./server.key'), // Замените на путь к вашему ключу
-    cert: fs.readFileSync('./server.cert'), // Замените на путь к вашему сертификату
-};
+// const sslOptions = {
+//     key: fs.readFileSync('./server.key'), // Замените на путь к вашему ключу
+//     cert: fs.readFileSync('./server.cert'), // Замените на путь к вашему сертификату
+// };
 
-https.createServer(sslOptions, app).listen(PORT, async () => {
+app.listen(PORT, async () => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
