@@ -1,3 +1,4 @@
+require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.TOKEN;
 const bot = new TelegramBot(token, { polling: true });
@@ -13,9 +14,10 @@ const app = express();
 const PORT = process.env.PORT || 22;
 
 
-app.use(cors({
-    origin: webAppUrl // Замените на ваш URL сайта на Netlify
-  }));
+// app.use(cors({
+//     origin: webAppUrl // Замените на ваш URL сайта на Netlify
+//   }));
+app.use(cors());
 app.use(express.json());
 
 app.get('/api/users', async (req, res) => {
@@ -47,8 +49,8 @@ const start = async () => {
 
     try {
         await sequelize.authenticate();
-        await sequelize.sync()
-        await console.log('vse zaebok')
+        await sequelize.sync({ force: false });
+        await console.log('vse zaebok');
 
     } catch (error) {
         console.log('Подключение сломалось');

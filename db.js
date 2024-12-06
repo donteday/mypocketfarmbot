@@ -1,3 +1,4 @@
+require('dotenv').config();
 const {Sequelize} = require('sequelize');
 const fs = require('fs');
 const path = require('path');
@@ -13,12 +14,14 @@ module.exports = new Sequelize(
         host: process.env.HOST,
         port: 15039,
         dialect: 'postgres',
-        dialectOptions: {
-            ssl: {
-              require: true, // Обязательно требовать SSL
-              rejectUnauthorized: false, // Установите в true, если хотите проверять сертификат
-              ca: fs.readFileSync(rootCertPath), // Читаем сертификат
-            },
-          },
+
     }
 )
+
+// dialectOptions: {
+//   ssl: {
+//     require: true, // Обязательно требовать SSL
+//     rejectUnauthorized: false, // Установите в true, если хотите проверять сертификат
+//     ca: fs.readFileSync(rootCertPath), // Читаем сертификат
+//   },
+// },
