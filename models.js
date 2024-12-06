@@ -1,7 +1,7 @@
 const sequelize = require('./db');
 const { DataTypes } = require('sequelize');
 
-const User = sequelize.define('User', {
+const User = sequelize.define('User ', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -14,12 +14,21 @@ const User = sequelize.define('User', {
         unique: true,
         allowNull: false
     },
-    field: {
-        type: DataTypes.STRING
+    userData: {  
+        type: DataTypes.JSON, 
+        allowNull: true
     },
-    userName: {  // Новое поле для хранения имени пользователя Telegram
+    userImageURL: { 
         type: DataTypes.STRING,
-        allowNull: true  // Установите в false, если это поле обязательно
+        allowNull: true
+    },
+    friends: { 
+        type: DataTypes.JSON, 
+        allowNull: true
+    },
+    userName: {  
+        type: DataTypes.STRING,
+        allowNull: true  
     }
 });
 

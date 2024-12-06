@@ -6,12 +6,12 @@ const path = require('path');
 const rootCertPath = path.join(process.env.HOME, '.postgresql', 'root.crt');
 
 module.exports = new Sequelize(
-    'mpfbd',
-    'root',
-    'root',
+  process.env.DBNAME,
+  process.env.USER,
+  process.env.PASSWORD,
     {
-        host: '90.156.157.127',
-        port: 5432,
+        host: process.env.HOST,
+        port: 15039,
         dialect: 'postgres',
         dialectOptions: {
             ssl: {
