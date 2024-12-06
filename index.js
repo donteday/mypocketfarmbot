@@ -1,5 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
-const token = '7647014073:AAFFKvvya4szgDLKIsi87O9mlBr_eXPRWlQ';
+const token = process.env.TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 const webAppUrl = 'https://fluffy-boba-873f41.netlify.app/';
 const sequelize = require('./db');
