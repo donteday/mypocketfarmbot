@@ -1,7 +1,7 @@
 // routes/userRoutes.js
 const express = require('express');
-const { User } = require('./../models'); // Импортируйте вашу модель User
-
+// const { User } = require('./../models'); // Импортируйте вашу модель User
+const User = require('./../models');
 const router = express.Router();
 
 // Маршрут для получения данных пользователя по chatId
