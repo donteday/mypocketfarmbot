@@ -9,31 +9,28 @@ const express = require('express');
 const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
+const userRoutes = require('./routes/userRoutes');
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 
 // app.use(cors({
 //     origin: webAppUrl // Замените на ваш URL сайта на Netlify
 //   }));
 app.use(cors());
 app.use(express.json());
-
-app.get('/api/users', async (req, res) => {
-    try {
-        const users = await UserModel.findAll();
-        res.json(users);
-    } catch (error) {
-        console.error('Ошибка при получении пользователей:', error);
-        res.status(500).json({ error: 'Ошибка при получении пользователей' });
-    }
-});
-
-// const sslOptions = {
-//     key: fs.readFileSync('./server.key'), // Замените на путь к вашему ключу
-//     cert: fs.readFileSync('./server.cert'), // Замените на путь к вашему сертификату
-// };
+app.use(bodyParser.json());
+app.use('/api/users', userRoutes);
+// app.get('/api/users', async (req, res) => {
+//     try {
+//         const users = await UserModel.findAll();
+//         res.json(users);
+//     } catch (error) {
+//         console.error('Ошибка при получении пользователей:', error);
+//         res.status(500).json({ error: 'Ошибка при получении пользователей' });
+//     }
+// });
 
 app.listen(PORT, async () => {
     try {
