@@ -16,10 +16,10 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// app.use(cors({
-//     origin: webAppUrl // Замените на ваш URL сайта на Netlify
-//   }));
-app.use(cors());
+app.use(cors({
+    origin: webAppUrl // Замените на ваш URL сайта на Netlify
+  }));
+// app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
