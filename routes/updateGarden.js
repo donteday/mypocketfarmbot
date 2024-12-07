@@ -12,6 +12,7 @@ router.put('/:chatId', async (req, res) => {
             return res.status(404).json({ message: 'Пользователь не найден' });
         }
         console.log('Give data', dataGarden);
+        console.log('user structure',user );
         
         user.userData = dataGarden;
         await user.save();
