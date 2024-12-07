@@ -10,6 +10,7 @@ const cors = require('cors');
 const https = require('https');
 const fs = require('fs');
 const userRoutes = require('./routes/userRoutes');
+const updateGarden = require('./routes/updateGarden');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
+app.use('/api/updateGarden', updateGarden);
 // app.get('/api/users', async (req, res) => {
 //     try {
 //         const users = await UserModel.findAll();
