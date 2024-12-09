@@ -9,11 +9,9 @@ router.get('/:chatId', async (req, res) => {
     const { chatId } = req.params;
     try {
         const user = await User.findOne({ where: { chatId } });
-
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' });
         }
-
         res.status(200).json({ userData: user.userData });
     } catch (error) {
         console.error('Ошибка при получении данных пользователя:', error);

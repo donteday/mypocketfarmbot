@@ -10,10 +10,7 @@ router.put('/:chatId', async (req, res) => {
         const user = await User.findOne({ where: { chatId } });
         if (!user) {
             return res.status(404).json({ message: 'Пользователь не найден' });
-        }
-        console.log('Give data', dataGarden);
-        console.log('user structure',user );
-        
+        }        
         user.userData = dataGarden;
         await user.save();
         res.status(200).json({ userData: user.userData });
