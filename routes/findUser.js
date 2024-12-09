@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('./../models');
+const { Op } = require('sequelize');
 
 router.get('/:search', async (req, res) => {
         const { search } = req.params; // Получаем параметр поиска из запроса
