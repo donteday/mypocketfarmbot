@@ -4,7 +4,7 @@ const User = require('./models/User'); // Импортируйте вашу мо
 
 router.get('/users', async (req, res) => {
         const { search } = req.query; // Получаем параметр поиска из запроса
-        // console.log(search);
+        console.log(search);
         
         try {
                 const users = await User.findAll({
