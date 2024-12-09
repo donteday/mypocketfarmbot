@@ -11,6 +11,7 @@ const https = require('https');
 const fs = require('fs');
 const userRoutes = require('./routes/userRoutes');
 const updateGarden = require('./routes/updateGarden');
+const findUser = require('./routes/findUser');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
 app.use('/api/updateGarden', updateGarden);
+app.use('/api/findUser', findUser);
 // app.get('/api/users', async (req, res) => {
 //     try {
 //         const users = await UserModel.findAll();
