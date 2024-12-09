@@ -11,7 +11,7 @@ router.get('/:search', async (req, res) => {
                 const users = await User.findAll({
                         where: {
                                 userName: {
-                                        [Op.like]: `%${search}%` // Используем оператор LIKE для поиска по имени пользователя
+                                        [Op.iLike]: `%${search}%` // Используем оператор LIKE для поиска по имени пользователя
                                 }
                         },
                         limit: 6 // Ограничиваем результат 6 пользователями
