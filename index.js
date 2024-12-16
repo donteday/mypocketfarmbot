@@ -1,111 +1,144 @@
 require('dotenv').config();
-const TelegramBot = require('node-telegram-bot-api');
-const token = process.env.TOKEN;
-const bot = new TelegramBot(token, { polling: true });
-const webAppUrl = 'https://fluffy-boba-873f41.netlify.app/';
-const sequelize = require('./db');
-const UserModel = require('./models');
 const express = require('express');
 const cors = require('cors');
-const https = require('https');
-const fs = require('fs');
+const bodyParser = require('body-parser');
+const { createServer } = require('http');
+const { Server } = require('socket.io');
+const TelegramBot = require('node-telegram-bot-api');
+const sequelize = require('./db');
+const UserModel = require('./models');
 const userRoutes = require('./routes/userRoutes');
 const updateGarden = require('./routes/updateGarden');
 const findUser = require('./routes/findUser');
-const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: process.env.WEB_APP_URL || "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 
-app.use(cors({
-    origin: webAppUrl // Замените на ваш URL сайта на Netlify
-  }));
-// app.use(cors());
+const PORT = process.env.PORT || 5000;
+const token = process.env.TOKEN;
+const webAppUrl = process.env.WEB_APP_URL || 'https://fluffy-boba-873f41.netlify.app/';
+
+const bot = new TelegramBot(token, { polling: true });
+
+// Middleware
+app.use(cors({ origin: webAppUrl }));
 app.use(express.json());
 app.use(bodyParser.json());
+
+// Routes
 app.use('/api/users', userRoutes);
 app.use('/api/updateGarden', updateGarden);
 app.use('/api/findUser', findUser);
-// app.get('/api/users', async (req, res) => {
-//     try {
-//         const users = await UserModel.findAll();
-//         res.json(users);
-//     } catch (error) {
-//         console.error('Ошибка при получении пользователей:', error);
-//         res.status(500).json({ error: 'Ошибка при получении пользователей' });
-//     }
-// });
 
-app.listen(PORT, async () => {
+// WebSocket handlers
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  socket.on('getFriendFarm', async (friendChatId) => {
     try {
-        await sequelize.authenticate();
-        await sequelize.sync();
-        console.log('Соединение с базой данных установлено.');
+      const plants = await UserModel.findAll({ where: { userChatId: friendChatId } });
+      socket.emit('friendFarmData', plants);
     } catch (error) {
-        console.error('Не удалось подключиться к базе данных:', error);
+      console.error('Error fetching friend farm:', error);
     }
+  });
+
+  socket.on('getUserData', async (chatId) => {
+    try {
+      const user = await UserModel.findOne({ where: { chatId } });
+      if (user) {
+        socket.emit('userData', user);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  });
+
+  socket.on('stealPlant', async ({ plantId, friendChatId, chatId }) => {
+    try {
+      const plant = await Plant.findOne({ where: { id: plantId, userChatId: friendChatId } });
+      if (plant && plant.growthStage > 0) {
+        await plant.update({ growthStage: plant.growthStage - 1 });
+        
+        await Plant.create({
+          name: plant.name,
+          growthStage: 1,
+          date: new Date(),
+          riseTime: plant.riseTime,
+          userChatId: chatId
+        });
+
+        io.to(friendChatId).emit('plantStolen', plant);
+        socket.emit('plantStolen', plant);
+      }
+    } catch (error) {
+      console.error('Error stealing plant:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
 });
 
-const start = async () => {
+// Telegram bot handlers
+bot.on('message', async (msg) => {
+  const chatId = String(msg.chat.id);
+  const text = msg.text;
+  const userName = msg.chat.username;
 
-    try {
-        await sequelize.authenticate();
-        await sequelize.sync({ force: false });
-        await console.log('vse zaebok');
+  try {
+    const existingUser = await UserModel.findOne({ where: { chatId, userName } });
 
-    } catch (error) {
-        console.log('Подключение сломалось');
+    if (text === '/start') {
+      if (!existingUser) {
+        await UserModel.create({ chatId, userName });
+        await bot.sendMessage(chatId, 'Приветствую тебя фермер!', {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: 'Играть', web_app: { url: webAppUrl } }]
+            ]
+          }
+        });
+      } else {
+        await bot.sendMessage(chatId, 'Жми кнопку играть, фермер!', {
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: 'Играть', web_app: { url: webAppUrl } }]
+            ]
+          }
+        });
+      }
+    } else if (text === '/donate') {
+      await bot.sendMessage(chatId, 'Деньгу закидуй мне по номеру телефона +79166944211');
+    } else if (text === '/users') {
+      const users = await UserModel.findAll();
+      console.log(users[0].dataValues.id);
     }
+  } catch (error) {
+    console.error('Error handling Telegram message:', error);
+  }
+});
 
-    bot.on('message', async (msg) => {
-        const chatId = String(msg.chat.id);
-        const text = msg.text;
-        const userName = msg.chat.username;
+// Server startup
+const startServer = async () => {
+  try {
+    await sequelize.authenticate();
+    await sequelize.sync({ force: false });
+    console.log('Соединение с базой данных установлено.');
 
-        // const existingUser  = true;
-        // const existingUser  = await UserModel.findOne({ where: { chatId } });
-
-        // console.log(`Checking for user with chatId: ${chatId}`);
-        const existingUser = await UserModel.findOne({ where: { chatId, userName } });
-        // console.log(`Existing user: ${existingUser}`);
-
-        if (text === '/start') {
-            // await UserModel.create({ chatId, userName });
-
-            if (!existingUser) {
-                // Если пользователь не найден, создаем нового
-                await UserModel.create({ chatId, userName });
-                await bot.sendMessage(chatId, 'Приветствую тебя фермер!', {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: 'Играть', web_app: { url: webAppUrl } }]
-                        ]
-                    }
-                });
-            } else {
-                // Если пользователь уже существует, отправляем соответствующее сообщение
-                await bot.sendMessage(chatId, 'Жми кнопку играфть, фермер!', {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [{ text: 'Играть', web_app: { url: webAppUrl } }]
-                        ]
-                    }
-                });
-            }
-
-        }
-
-        if (text === '/donate') {
-            await bot.sendMessage(chatId, 'Деньгу закидуй мне по номеру телефона +79166944211')
-        }
-        if (text === '/users') {
-            const users = await UserModel.findAll();
-            await console.log(users[0].dataValues.id);
-        }
-
+    httpServer.listen(PORT, () => {
+      console.log(`Сервер запущен на порту ${PORT}`);
     });
-}
+  } catch (error) {
+    console.error('Ошибка при запуске сервера:', error);
+  }
+};
 
-start();
-
-
+startServer();
