@@ -10,12 +10,18 @@ const UserModel = require('./models');
 const userRoutes = require('./routes/userRoutes');
 const updateGarden = require('./routes/updateGarden');
 const findUser = require('./routes/findUser');
+const fs = require('fs');
+const https = require('https');
 
 const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer, {
+// const httpServer = createServer(app);
+const httpsServer = https.createServer({
+    key: fs.readFileSync('./server.cert'),
+    cert: fs.readFileSync('./server.key')
+  }, app);
+const io = new Server(httpsServer, {
   cors: {
-    origin: process.env.WEB_APP_URL || "http://localhost:3000",
+    origin: process.env.WEB_APP_URL || "http://89.104.69.78:5000",
     methods: ["GET", "POST"]
   }
 });
@@ -133,7 +139,7 @@ const startServer = async () => {
     await sequelize.sync({ force: false });
     console.log('Соединение с базой данных установлено.');
 
-    httpServer.listen(PORT, () => {
+    httpsServer.listen(PORT, () => {
       console.log(`Сервер запущен на порту ${PORT}`);
     });
   } catch (error) {
