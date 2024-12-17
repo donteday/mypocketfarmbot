@@ -21,14 +21,14 @@ const httpsServer = https.createServer({
 }, app);
 const io = new Server(httpsServer, {
     cors: {
-        origin: process.env.WEB_APP_URL || "https://fluffy-boba-873f41.netlify.app/",
+        origin: process.env.WEB_APP_URL || "https://fluffy-boba-873f41.netlify.app",
         methods: ["GET", "POST"]
     }
 });
 
 const PORT = process.env.PORT || 5000;
 const token = process.env.TOKEN;
-const webAppUrl = 'https://fluffy-boba-873f41.netlify.app/';
+const webAppUrl = 'https://fluffy-boba-873f41.netlify.app';
 
 const bot = new TelegramBot(token, { polling: true });
 
