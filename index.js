@@ -16,12 +16,12 @@ const https = require('https');
 const app = express();
 // const httpServer = createServer(app);
 const httpsServer = https.createServer({
-    key: fs.readFileSync('./server.cert'),
-    cert: fs.readFileSync('./server.key')
+    key: fs.readFileSync('./certificate.crt'),
+    cert: fs.readFileSync('./certificate.key')
   }, app);
 const io = new Server(httpsServer, {
   cors: {
-    origin: process.env.WEB_APP_URL || "http://89.104.69.78:5000",
+    origin: process.env.WEB_APP_URL || "http://mypocketfarm.ru",
     methods: ["GET", "POST"]
   }
 });
