@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { createServer } = require('http');
 const { Server } = require('socket.io');
 const TelegramBot = require('node-telegram-bot-api');
 const sequelize = require('./db');
@@ -22,7 +21,7 @@ const httpsServer = https.createServer({
 }, app);
 const io = new Server(httpsServer, {
     cors: {
-        origin: process.env.WEB_APP_URL || "https://mypocketfarm.ru",
+        origin: process.env.WEB_APP_URL || "https://fluffy-boba-873f41.netlify.app/",
         methods: ["GET", "POST"]
     }
 });
@@ -34,7 +33,7 @@ const webAppUrl = 'https://fluffy-boba-873f41.netlify.app/';
 const bot = new TelegramBot(token, { polling: true });
 
 // Middleware
-app.use(cors({ origin: webAppUrl }));
+app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
