@@ -45,8 +45,13 @@ let isUpdating = false;
 // WebSocket handlers
 io.on('connection', (socket) => {
     console.log('A user connected');
+    const { chatId } = socket.handshake.query; // Получаем chatId из query
 
-    socket.on('updateData', async (chatId, data) => {
+    // Добавляем сокет в комнату с chatId
+    socket.join(chatId);
+
+    socket.on('updateData', async (chatid, data) => {
+
         try {
             const user = await UserModel.findOne({ where: { chatId } });
             if (user) {
