@@ -52,8 +52,11 @@ io.on('connection', (socket) => {
             if (user) {
                 user.userData = data;
                 await user.save();
-                io.to(chatId).emit('userData', user);
-                // socket.broadcast.emit('userData', user);
+                if (!isUpdating) {
+                    isUpdating = true; // Устанавливаем флаг
+                    socket.broadcast.emit('userData', user); // Отправляем обновленные данные всем клиентам
+                    isUpdating = false; // Сбрасываем флаг
+                }
             }
         } catch (error) {
             console.error('Error updating user data:', error);
