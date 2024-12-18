@@ -51,14 +51,12 @@ io.on('connection', (socket) => {
             const user = await UserModel.findOne({ where: { chatId } });
             if (user) {
                 user.userData = data;
-                isUpdating = false; // Устанавливаем флаг
 
                 
                 await user.save();
-                if (!isUpdating) {
-                    socket.broadcast.emit('userData', user); // Отправляем обновленные данные всем клиентам
-                    isUpdating = true; // Сбрасываем флаг
-                }
+                
+                io.to(chatId).emit('userData', user);
+
             }
         } catch (error) {
             console.error('Error updating user data:', error);
