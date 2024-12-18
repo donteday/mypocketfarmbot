@@ -41,7 +41,7 @@ app.use(bodyParser.json());
 app.use('/api/users', userRoutes);
 app.use('/api/updateGarden', updateGarden);
 app.use('/api/findUser', findUser);
-
+let isUpdating = false;
 // WebSocket handlers
 io.on('connection', (socket) => {
     console.log('A user connected');
@@ -52,7 +52,8 @@ io.on('connection', (socket) => {
             if (user) {
                 user.userData = data;
                 await user.save();
-                socket.broadcast.emit('userData', user);
+                io.to(chatId).emit('userData', user);
+                // socket.broadcast.emit('userData', user);
             }
         } catch (error) {
             console.error('Error updating user data:', error);
