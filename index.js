@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
     // Добавляем сокет в комнату с chatId
     socket.join(chatId);
 
-    socket.on('updateData', async (chatid, data) => {
+    socket.on('updateData', async (chatId, data) => {
 
         try {
             const user = await UserModel.findOne({ where: { chatId } });
