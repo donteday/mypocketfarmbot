@@ -51,11 +51,13 @@ io.on('connection', (socket) => {
             const user = await UserModel.findOne({ where: { chatId } });
             if (user) {
                 user.userData = data;
+                isUpdating = false; // Устанавливаем флаг
+
+                
                 await user.save();
                 if (!isUpdating) {
-                    isUpdating = true; // Устанавливаем флаг
                     socket.broadcast.emit('userData', user); // Отправляем обновленные данные всем клиентам
-                    isUpdating = false; // Сбрасываем флаг
+                    isUpdating = true; // Сбрасываем флаг
                 }
             }
         } catch (error) {
