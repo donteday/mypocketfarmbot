@@ -55,6 +55,18 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('updateData', async (chatId, data) => {
+        try {
+            const user = await UserModel.findOne({ where: { chatId } });
+            if (user) {
+                user.userData = data;
+                await user.save();
+            }
+        } catch (error) {
+            console.error('Error updating user data:', error);
+        }
+    })
+
     socket.on('getUserData', async (chatId) => {
         try {
             const user = await UserModel.findOne({ where: { chatId } });
