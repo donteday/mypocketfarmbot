@@ -46,21 +46,13 @@ app.use('/api/findUser', findUser);
 io.on('connection', (socket) => {
     console.log('A user connected');
 
-    socket.on('getFriendFarm', async (friendChatId) => {
-        try {
-            const plants = await UserModel.findAll({ where: { userChatId: friendChatId } });
-            socket.emit('friendFarmData', plants);
-        } catch (error) {
-            console.error('Error fetching friend farm:', error);
-        }
-    });
-
     socket.on('updateData', async (chatId, data) => {
         try {
             const user = await UserModel.findOne({ where: { chatId } });
             if (user) {
                 user.userData = data;
                 await user.save();
+                socket.broadcast.emit('userData', user);
             }
         } catch (error) {
             console.error('Error updating user data:', error);
